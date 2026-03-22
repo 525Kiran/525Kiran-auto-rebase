@@ -37,6 +37,10 @@ on:
   pull_request:
     types: [labeled]
 
+permissions:
+  contents: write
+  pull-requests: write
+
 jobs:
   rebase:
     if: github.event.label.name == 'auto-rebase'
