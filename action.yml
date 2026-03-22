@@ -1,6 +1,6 @@
-name: 'Auto Rebase PR'
+name: 'Auto Rebase Pull Requests'
 description: 'Automatically rebase pull requests with optional GPG signing support'
-author: 'Your Name'
+author: '525Kiran'
 
 branding:
   icon: 'git-pull-request'
