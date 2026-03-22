@@ -1,0 +1,66 @@
+name: 'Auto Rebase PR'
+description: 'Automatically rebase pull requests with optional GPG signing support'
+author: 'Your Name'
+
+branding:
+  icon: 'git-pull-request'
+  color: 'blue'
+
+inputs:
+  github-token:
+    description: 'GitHub token for authentication'
+    required: false
+    default: ${{ github.token }}
+  git-user-name:
+    description: 'Git user name for commits'
+    required: false
+    default: 'github-actions[bot]'
+  git-user-email:
+    description: 'Git user email for commits'
+    required: false
+    default: 'github-actions[bot]@users.noreply.github.com'
+  base-branch:
+    description: 'Base branch to rebase onto (auto-detected from PR)'
+    required: false
+    default: ''
+  head-branch:
+    description: 'Head branch to rebase (auto-detected from PR)'
+    required: false
+    default: ''
+  commit-message:
+    description: 'Commit message for the rebased commit (uses PR title if not provided)'
+    required: false
+    default: ''
+  enable-signing:
+    description: 'Enable GPG signing for commits (true/false)'
+    required: false
+    default: 'false'
+  gpg-private-key:
+    description: 'GPG private key for signing (required if enable-signing is true)'
+    required: false
+  gpg-passphrase:
+    description: 'GPG key passphrase (optional, only if key has passphrase)'
+    required: false
+
+outputs:
+  success:
+    description: 'Whether the rebase was successful'
+  commit-sha:
+    description: 'SHA of the new commit after rebase'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Execute Rebase
+      shell: bash
+      env:
+        GITHUB_TOKEN: ${{ inputs.github-token }}
+        GIT_USER_NAME: ${{ inputs.git-user-name }}
+        GIT_USER_EMAIL: ${{ inputs.git-user-email }}
+        BASE_BRANCH: ${{ inputs.base-branch || github.event.pull_request.base.ref }}
+        HEAD_BRANCH: ${{ inputs.head-branch || github.event.pull_request.head.ref }}
+        COMMIT_MESSAGE: ${{ inputs.commit-message || github.event.pull_request.title }}
+        ENABLE_SIGNING: ${{ inputs.enable-signing }}
+        GPG_PRIVATE_KEY: ${{ inputs.gpg-private-key }}
+        GPG_PASSPHRASE: ${{ inputs.gpg-passphrase }}
+      run: ${{ github.action_path }}/auto-rebase.sh
